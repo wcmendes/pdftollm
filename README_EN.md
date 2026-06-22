@@ -1,139 +1,116 @@
-# PDF to Markdown Converter
+# PDF2LLM
 
-Cross-platform desktop application for batch conversion of PDF files to Markdown, with optional image extraction and OCR fallback for scanned documents.
+> **PDF to Markdown Converter** — Convert PDFs to Markdown optimized for language models (LLMs)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-green.svg)](https://python.org)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey.svg)]()
+[![Status](https://img.shields.io/badge/Status-Beta-orange.svg)]()
+
+---
+
+Desktop application for batch PDF to Markdown conversion, designed for feeding LLMs like ChatGPT, Claude, Gemini, and others. Preserves document structure (headings, tables, lists) and provides automatic OCR for scanned PDFs.
 
 ## Features
 
-- Batch conversion of multiple PDF files to Markdown
-- Preservation of document structure (headings, paragraphs, lists, tables)
-- Optional extraction of embedded images from PDFs
-- Automatic OCR fallback for scanned PDFs (Tesseract + EasyOCR)
-- Simple and intuitive graphical interface (tkinter)
-- Internationalization: Brazilian Portuguese and English
-- Compatible with Linux and Windows
+- **Batch conversion** — select up to 50 PDFs and convert at once
+- **Structure preserved** — headings, paragraphs, lists, and tables kept in Markdown
+- **Image extraction** — optional, saves images in an organized subfolder
+- **Automatic OCR** — detects scanned PDFs and reprocesses with Tesseract + EasyOCR
+- **GUI** — simple interface with progress bar and language selector
+- **Bilingual** — Portuguese (Brazil) and English, with live switching
+- **Cross-platform** — Windows and Linux
 
-## System Requirements
+## Download
 
-- **Python** 3.10 or higher
-- **Tesseract OCR** (optional, required only for scanned PDFs)
-- **Operating System**: Linux or Windows 10+
+Get the latest version from [Releases](https://github.com/wcmendes/pdftollm/releases):
 
-### Installing Tesseract (optional)
+| Platform | File |
+|----------|------|
+| Windows | `PDF2LLM.exe` |
+| Linux (Debian/Ubuntu) | `pdf2llm_x.x.x_amd64.deb` |
 
-Tesseract is only required if you want to use the OCR feature for image-based PDFs.
+## Requirements
 
-**Windows:**
+- **For .exe / .deb**: none — everything is bundled
+- **To run from source**: Python 3.10+
+- **Tesseract OCR** (optional): improves OCR results, but the app works without it
 
-1. Download the installer from: https://github.com/UB-Mannheim/tesseract/wiki
-2. Run the installer and follow the instructions
-3. Add the installation path to the system PATH (e.g., `C:\Program Files\Tesseract-OCR`)
+### Install Tesseract (optional)
 
-**Linux (Ubuntu/Debian):**
+<details>
+<summary>Windows</summary>
 
-```bash
-sudo apt update
-sudo apt install tesseract-ocr tesseract-ocr-por
-```
+1. Download from https://github.com/UB-Mannheim/tesseract/wiki
+2. Install and add to PATH (e.g., `C:\Program Files\Tesseract-OCR`)
+</details>
 
-**Linux (Fedora):**
-
-```bash
-sudo dnf install tesseract tesseract-langpack-por
-```
-
-## Installation
-
-1. Clone the repository:
+<details>
+<summary>Linux (Ubuntu/Debian)</summary>
 
 ```bash
-git clone https://github.com/wcmendes/PDFConverter_MD_Desktop.git
-cd PDFConverter_MD_Desktop
+sudo apt install tesseract-ocr tesseract-ocr-eng
 ```
-
-2. Create and activate a virtual environment (recommended):
-
-```bash
-python -m venv venv
-
-# Linux
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
-```
-
-3. Install the project with development dependencies:
-
-```bash
-pip install -e .[dev]
-```
+</details>
 
 ## Usage
 
-### Graphical Interface
+### Via executable
 
-Run the application with:
+Open `PDF2LLM.exe` (Windows) or `pdf2llm` (Linux). The interface guides the whole process:
+
+1. Select PDF files
+2. Output folder is automatically suggested (`/md` next to the PDFs)
+3. Click **Convert**
+4. When done, choose whether to open the output folder
+
+### From source
 
 ```bash
-pdfconverter
-```
-
-Or directly via the Python module:
-
-```bash
+git clone https://github.com/wcmendes/pdftollm.git
+cd pdftollm
+pip install -e .[dev]
 python -m src.main
 ```
 
-### Step by step
+## OCR for scanned PDFs
 
-1. Click **"Select Files"** to choose the PDFs you want to convert
-2. Click **"Select Output Folder"** to define where the Markdown files will be saved
-3. (Optional) Check the **"Extract Images"** option to save embedded images from PDFs
-4. Click **"Convert"** to start the process
-5. Follow the progress via the progress bar
-6. At the end, a summary will show how many files were successfully converted
+After conversion, if the system detects PDFs that produced empty Markdown (scanned documents), it offers automatic OCR reprocessing:
 
-### OCR Fallback
+1. **Tesseract** (primary) — fast and accurate
+2. **EasyOCR** (fallback) — deep learning based, bundled in the executable
 
-If the application detects scanned PDFs (which produced illegible Markdown), it will ask if you want to reprocess them with OCR. The system first tries Tesseract and, if needed, EasyOCR as a secondary engine.
+If neither can extract text, the original file is preserved.
 
 ## Project Structure
 
 ```
-PDFConverter_MD_Desktop/
+pdftollm/
 ├── src/
-│   ├── main.py              # Application entry point
-│   ├── converters/          # PDF → Markdown conversion engine
-│   ├── gui/                 # Graphical interface (tkinter)
-│   ├── i18n/                # Internationalization
-│   ├── models/              # Data models
-│   └── ocr/                 # OCR engines (Tesseract, EasyOCR)
-├── locales/                 # Translation catalogs (JSON)
-├── tests/                   # Unit and property-based tests
-├── pyproject.toml           # Project configuration and dependencies
-├── LICENSE                  # MIT License
-└── README.md                # Documentation (Portuguese)
+│   ├── main.py           # Entry point
+│   ├── converters/       # PDF → Markdown engine
+│   ├── gui/              # tkinter interface
+│   ├── i18n/             # Internationalization
+│   ├── models/           # Dataclasses and managers
+│   └── ocr/              # Tesseract + EasyOCR
+├── locales/              # Translations (JSON)
+├── tests/                # 246 tests (unit + property-based)
+├── pyproject.toml        # Dependencies and config
+└── pdfconverter.spec     # PyInstaller build
 ```
 
-## Running Tests
+## Tests
 
 ```bash
-pytest
-```
-
-With coverage:
-
-```bash
-pytest --cov=src
+pytest                # run all
+pytest --cov=src      # with coverage
 ```
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE) — William Mendes, 2026
 
 ## Author
 
 **William Mendes**
-
-- GitHub: [github.com/wcmendes](http://github.com/wcmendes)
-- Lattes: [lattes.cnpq.br/7726054867638395](https://lattes.cnpq.br/7726054867638395)
+— [GitHub](http://github.com/wcmendes) · [Lattes](https://lattes.cnpq.br/7726054867638395)
