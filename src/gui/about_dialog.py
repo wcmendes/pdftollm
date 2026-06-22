@@ -21,8 +21,8 @@ class AboutDialog:
     AUTHOR = "William Mendes"
     GITHUB_URL = "http://github.com/wcmendes"
     LATTES_URL = "https://lattes.cnpq.br/7726054867638395"
-    VERSION = "1.0.0"
-    YEAR = "2025"
+    VERSION = "0.1.0-beta"
+    YEAR = "2026"
 
     def __init__(self, parent: tk.Tk, i18n: I18nManager) -> None:
         """Inicializa o diálogo Sobre.
