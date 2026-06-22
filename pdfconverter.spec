@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec file para PDF to Markdown Converter.
+"""PyInstaller spec file para PDF2LLM Converter.
 
 Gera um executável único (.exe) com todos os dados necessários embutidos.
 
@@ -7,8 +7,8 @@ Uso:
     python -m PyInstaller pdfconverter.spec --noconfirm --clean
 """
 
+import importlib
 import sys
-import os
 from pathlib import Path
 
 block_cipher = None
@@ -16,11 +16,10 @@ block_cipher = None
 # Diretório raiz do projeto
 PROJECT_ROOT = Path(SPECPATH)
 
-# Diretório site-packages
-SITE_PACKAGES = Path(r'C:\Users\willi\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages')
-
-# Recursos do pymupdf_layout (modelos ONNX + YAML)
-PYMUPDF_LAYOUT_RESOURCES = SITE_PACKAGES / 'pymupdf' / 'layout' / 'resources'
+# Localizar dinamicamente o diretório de recursos do pymupdf_layout
+_pymupdf_layout = importlib.import_module('pymupdf.layout')
+PYMUPDF_LAYOUT_DIR = Path(_pymupdf_layout.__file__).parent
+PYMUPDF_LAYOUT_RESOURCES = PYMUPDF_LAYOUT_DIR / 'resources'
 
 a = Analysis(
     [str(PROJECT_ROOT / 'src' / 'main.py')],
@@ -103,5 +102,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,  # Adicione 'assets/icon.ico' se tiver um ícone .ico
+    icon=None,
 )
