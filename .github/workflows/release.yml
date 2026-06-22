@@ -21,6 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -e .
           pip install pyinstaller
 
@@ -51,6 +52,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -e .
           pip install pyinstaller
 
@@ -154,5 +156,4 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/windows/PDF2LLM.exe
-            artifacts/linux/dist/pdf2llm
             artifacts/linux/*.deb

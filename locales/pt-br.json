@@ -1,5 +1,5 @@
 {
-  "window.title": "PDF2LLM Converter",
+  "window.title": "PDF2LLM - PDF to Markdown Converter",
   "buttons.select_files": "Selecionar Arquivos PDF",
   "buttons.select_folder": "Selecionar Pasta de Destino",
   "buttons.convert": "Converter",
@@ -61,7 +61,7 @@
   "dialogs.files_rejected_title": "Arquivos Rejeitados",
   "dialogs.files_rejected_message": "Os seguintes arquivos foram rejeitados por serem inválidos:",
   "about.title": "Sobre",
-  "about.app_name": "PDF2LLM Converter",
+  "about.app_name": "PDF2LLM - PDF to Markdown Converter",
   "about.description": "Converte PDFs para Markdown otimizado para uso com modelos de linguagem (LLMs, ChatGPT, Claude, etc.)",
   "about.version": "Versão: {version}",
   "about.year": "© {year}",

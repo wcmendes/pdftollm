@@ -130,6 +130,9 @@ class MainWindow:
         # ─── Seção: Status do Tesseract OCR ──────────────────────────────
         row = self._build_tesseract_status(row)
 
+        # ─── Rodapé ─────────────────────────────────────────────────────
+        row = self._build_footer(row)
+
     def _build_header(self, row: int) -> int:
         """Constrói o cabeçalho com seletor de idioma e botão Sobre.
 
@@ -363,6 +366,30 @@ class MainWindow:
 
         return row + 1
 
+    def _build_footer(self, row: int) -> int:
+        """Constrói o rodapé discreto com link do autor.
+
+        Args:
+            row: Linha atual no grid.
+
+        Returns:
+            Próxima linha disponível no grid.
+        """
+        self._footer_label = ttk.Label(
+            self._main_frame,
+            text="@wcmendes",
+            foreground="gray",
+            cursor="hand2",
+            font=("TkDefaultFont", 7),
+        )
+        self._footer_label.grid(row=row, column=0, sticky="e", pady=(4, 0))
+        self._footer_label.bind(
+            "<Button-1>",
+            lambda e: __import__("webbrowser").open("http://github.com/wcmendes"),
+        )
+
+        return row + 1
+
     # ─── Métodos de interação ────────────────────────────────────────────────
 
     def select_files(self) -> None:
@@ -387,12 +414,11 @@ class MainWindow:
         # Atualizar a Listbox com os novos arquivos aceitos
         self._refresh_file_listbox()
 
-        # Sugerir pasta de destino como subpasta 'md' na mesma pasta dos PDFs
+        # Sugerir pasta de destino como a mesma pasta dos PDFs selecionados
         if result.accepted and self._output_folder_path is None:
             source_folder = result.accepted[0].parent
-            suggested_folder = source_folder / "md"
-            self._output_folder_path = suggested_folder
-            self._output_folder_var.set(str(suggested_folder))
+            self._output_folder_path = source_folder
+            self._output_folder_var.set(str(source_folder))
 
         # Notificar rejeições ao usuário
         self._notify_rejections(result)
@@ -483,7 +509,7 @@ class MainWindow:
         # Desabilitar botão converter durante o processamento
         self._set_converting_state(True)
 
-        # Criar pasta de destino se não existir (ex: subpasta 'md')
+        # Garantir que pasta de destino existe
         self._output_folder_path.mkdir(parents=True, exist_ok=True)
 
         # Resetar barra de progresso
