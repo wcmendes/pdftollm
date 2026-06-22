@@ -60,10 +60,14 @@ def main() -> None:
     e inicia o loop de eventos.
     """
     _configure_logging()
-    logger.info("Iniciando PDF to Markdown Converter")
+    logger.info("Iniciando PDF2LLM Converter")
 
-    # Criar instância raiz do tkinter
-    root = tk.Tk()
+    # Criar instância raiz do tkinter (com suporte a drag-and-drop se disponível)
+    try:
+        from tkinterdnd2 import TkinterDnD
+        root = TkinterDnD.Tk()
+    except ImportError:
+        root = tk.Tk()
 
     # Configurar tamanho mínimo da janela
     root.minsize(MIN_WIDTH, MIN_HEIGHT)

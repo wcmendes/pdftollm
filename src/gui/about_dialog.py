@@ -19,7 +19,7 @@ class AboutDialog:
     """
 
     AUTHOR = "William Mendes"
-    GITHUB_URL = "http://github.com/wcmendes"
+    GITHUB_URL = "https://github.com/wcmendes/pdftollm"
     LATTES_URL = "https://lattes.cnpq.br/7726054867638395"
     VERSION = "0.1.0-beta"
     YEAR = "2026"

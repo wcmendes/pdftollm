@@ -88,6 +88,9 @@ class MainWindow:
         # Vincular comandos dos botões
         self._bind_commands()
 
+        # Configurar drag-and-drop (se tkinterdnd2 estiver disponível)
+        self._setup_drag_and_drop()
+
     def _bind_commands(self) -> None:
         """Vincula os comandos de interação aos widgets."""
         self._select_files_button.config(command=self.select_files)
@@ -96,6 +99,53 @@ class MainWindow:
         self._select_folder_button.config(command=self.select_output_folder)
         self._convert_button.config(command=self.start_conversion)
         self._language_combo.bind("<<ComboboxSelected>>", self._on_language_changed)
+
+    def _setup_drag_and_drop(self) -> None:
+        """Configura drag-and-drop de arquivos PDF para a listbox.
+
+        Usa tkinterdnd2 se disponível. Caso contrário, ignora silenciosamente.
+        """
+        try:
+            from tkinterdnd2 import DND_FILES
+            self._file_listbox.drop_target_register(DND_FILES)
+            self._file_listbox.dnd_bind("<<Drop>>", self._on_files_dropped)
+        except (ImportError, Exception) as e:
+            logger.debug("Drag-and-drop não disponível: %s", e)
+
+    def _on_files_dropped(self, event) -> None:
+        """Handler para arquivos arrastados para a interface.
+
+        Processa os caminhos recebidos via drag-and-drop, filtra apenas .pdf
+        e adiciona ao FileListManager.
+        """
+        # tkinterdnd2 retorna paths separados por espaço, com {} em volta se tiver espaços
+        raw_data = event.data
+        # Parse: paths entre chaves ou separados por espaço
+        paths: list[Path] = []
+        if "{" in raw_data:
+            # Formato: {path with spaces} {another path}
+            import re
+            matches = re.findall(r"\{([^}]+)\}", raw_data)
+            paths = [Path(m) for m in matches if m.lower().endswith(".pdf")]
+        else:
+            # Formato simples: path1 path2
+            for p in raw_data.split():
+                if p.lower().endswith(".pdf"):
+                    paths.append(Path(p))
+
+        if not paths:
+            return
+
+        result = self._file_list_manager.add_files(paths)
+        self._refresh_file_listbox()
+
+        # Atualizar pasta de destino com pasta do último arquivo
+        if result.accepted:
+            source_folder = result.accepted[-1].parent
+            self._output_folder_path = source_folder
+            self._output_folder_var.set(str(source_folder))
+
+        self._notify_rejections(result)
 
     def _build_layout(self) -> None:
         """Constrói o layout completo da janela principal."""
@@ -377,7 +427,7 @@ class MainWindow:
         """
         self._footer_label = ttk.Label(
             self._main_frame,
-            text="@wcmendes",
+            text="William Mendes",
             foreground="gray",
             cursor="hand2",
             font=("TkDefaultFont", 7),
@@ -385,7 +435,7 @@ class MainWindow:
         self._footer_label.grid(row=row, column=0, sticky="e", pady=(4, 0))
         self._footer_label.bind(
             "<Button-1>",
-            lambda e: __import__("webbrowser").open("http://github.com/wcmendes"),
+            lambda e: __import__("webbrowser").open("https://lattes.cnpq.br/7726054867638395"),
         )
 
         return row + 1
@@ -414,9 +464,9 @@ class MainWindow:
         # Atualizar a Listbox com os novos arquivos aceitos
         self._refresh_file_listbox()
 
-        # Sugerir pasta de destino como a mesma pasta dos PDFs selecionados
-        if result.accepted and self._output_folder_path is None:
-            source_folder = result.accepted[0].parent
+        # Sempre atualizar pasta de destino com a pasta do último arquivo aceito
+        if result.accepted:
+            source_folder = result.accepted[-1].parent
             self._output_folder_path = source_folder
             self._output_folder_var.set(str(source_folder))
 

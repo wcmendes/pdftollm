@@ -17,6 +17,7 @@ dependencies = [
     "pymupdf4llm>=0.0.10",
     "pytesseract>=0.3.10",
     "easyocr>=1.7.0",
+    "tkinterdnd2>=0.4.0",
 ]
 
 [project.optional-dependencies]
