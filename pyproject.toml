@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdf-to-markdown-converter"
+version = "1.0.0"
+description = "Aplicação desktop multiplataforma para conversão em lote de PDFs para Markdown"
+authors = [
+    { name = "William Mendes", email = "wcmendes@users.noreply.github.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "PyMuPDF>=1.24.0",
+    "pymupdf4llm>=0.0.10",
+    "pytesseract>=0.3.10",
+    "easyocr>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "hypothesis>=6.82.0",
+    "pytest-cov>=4.1.0",
+]
+
+[project.scripts]
+pdfconverter = "src.main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "locales*"]
