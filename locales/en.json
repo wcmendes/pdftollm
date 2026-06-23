@@ -81,5 +81,6 @@
   "validation.password_protected": "File is password protected",
   "validation.not_pdf": "The file is not a valid PDF",
   "validation.no_pages": "The file contains no pages",
-  "validation.file_not_found": "File not found: {filename}"
+  "validation.file_not_found": "File not found: {filename}",
+  "update.available": "⬆ New version available: {version} — click to download"
 }

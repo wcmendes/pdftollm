@@ -20,6 +20,7 @@ from src.ocr.easyocr_engine import EasyOCREngine
 from src.ocr.markdown_quality_detector import MarkdownQualityDetector
 from src.ocr.ocr_manager import OCRManager
 from src.ocr.tesseract_engine import TesseractEngine, is_tesseract_available
+from src.update_checker import check_for_updates
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,9 @@ class MainWindow:
 
         # Configurar drag-and-drop (se tkinterdnd2 estiver disponível)
         self._setup_drag_and_drop()
+
+        # Verificar atualizações em background
+        self._check_for_updates()
 
     def _bind_commands(self) -> None:
         """Vincula os comandos de interação aos widgets."""
@@ -440,20 +444,61 @@ class MainWindow:
         Returns:
             Próxima linha disponível no grid.
         """
+        footer_frame = ttk.Frame(self._main_frame)
+        footer_frame.grid(row=row, column=0, sticky="ew", pady=(4, 0))
+        footer_frame.columnconfigure(0, weight=1)
+
+        # Label de atualização (invisível até verificar)
+        self._update_label = ttk.Label(
+            footer_frame,
+            text="",
+            foreground="#0066CC",
+            cursor="hand2",
+            font=("TkDefaultFont", 7),
+        )
+        self._update_label.grid(row=0, column=0, sticky="w")
+
+        # Link do autor
         self._footer_label = ttk.Label(
-            self._main_frame,
+            footer_frame,
             text="William Mendes",
             foreground="gray",
             cursor="hand2",
             font=("TkDefaultFont", 7),
         )
-        self._footer_label.grid(row=row, column=0, sticky="e", pady=(4, 0))
+        self._footer_label.grid(row=0, column=1, sticky="e")
         self._footer_label.bind(
             "<Button-1>",
             lambda e: __import__("webbrowser").open("https://lattes.cnpq.br/7726054867638395"),
         )
 
         return row + 1
+
+    def _check_for_updates(self) -> None:
+        """Inicia verificação de atualização em background.
+
+        Se houver versão nova, exibe um aviso discreto no rodapé.
+        Falha silenciosa se não houver internet ou der erro.
+        """
+        def on_update_available(version: str, url: str):
+            # Chamado na thread de background, precisa agendar na GUI thread
+            self.root.after(0, lambda: self._show_update_available(version, url))
+
+        check_for_updates(on_update_available)
+
+    def _show_update_available(self, version: str, url: str) -> None:
+        """Mostra aviso de atualização no rodapé.
+
+        Args:
+            version: Tag da versão mais recente (ex: "v0.2.0").
+            url: URL da página de release no GitHub.
+        """
+        update_text = self.i18n.t("update.available").replace("{version}", version)
+        self._update_label.config(text=update_text)
+        self._update_label.bind(
+            "<Button-1>",
+            lambda e: __import__("webbrowser").open(url),
+        )
 
     # ─── Métodos de interação ────────────────────────────────────────────────
 
