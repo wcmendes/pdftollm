@@ -80,10 +80,10 @@ class TestI18nManagerCatalogs:
         """Deve carregar catálogos para todos os locales definidos."""
         # Verifica que ambos os catálogos foram carregados (não vazios)
         i18n.set_locale(Locale.PT_BR)
-        assert i18n.t("window.title") == "Conversor PDF para Markdown"
+        assert i18n.t("window.title") == "PDF2LLM - PDF to Markdown Converter"
 
         i18n.set_locale(Locale.EN)
-        assert i18n.t("window.title") == "PDF to Markdown Converter"
+        assert i18n.t("window.title") == "PDF2LLM - PDF to Markdown Converter"
 
 
 class TestI18nManagerTranslation:

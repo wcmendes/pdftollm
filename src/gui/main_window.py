@@ -14,7 +14,7 @@ from tkinter import filedialog, messagebox, ttk
 from src.converters.conversion_manager import ConversionManager
 from src.gui.about_dialog import AboutDialog
 from src.i18n.i18n_manager import I18nManager
-from src.models.data_models import ConversionResult, Locale, OCRBatchResult, ProgressUpdate
+from src.models.data_models import ConversionFileResult, ConversionResult, ConversionStatus, Locale, OCRBatchResult, ProgressUpdate
 from src.models.file_list_manager import FileListManager
 from src.ocr.easyocr_engine import EasyOCREngine
 from src.ocr.markdown_quality_detector import MarkdownQualityDetector
@@ -622,6 +622,7 @@ class MainWindow:
         """Exibe resumo final da conversão em um messagebox.
 
         Após exibir o resumo, pergunta se o usuário deseja abrir a pasta de destino.
+        Quando há falhas, lista os arquivos que falharam e o motivo.
 
         Args:
             result: Resultado da conversão com contadores de sucesso e falha.
@@ -637,6 +638,15 @@ class MainWindow:
                 "{count}", str(result.failed)
             ),
         ]
+
+        # Detalhar arquivos que falharam
+        if result.failed > 0:
+            summary_lines.append("")
+            summary_lines.append(self.i18n.t("summary.failed_details_header"))
+            for file_result in result.results:
+                if file_result.status != ConversionStatus.SUCCESS:
+                    reason = self._get_failure_reason(file_result)
+                    summary_lines.append(f"  • {file_result.source.name}: {reason}")
 
         messagebox.showinfo(
             self.i18n.t("summary.title"),
@@ -661,6 +671,26 @@ class MainWindow:
                     subprocess.Popen(["open", folder_str])
                 else:
                     subprocess.Popen(["xdg-open", folder_str])
+
+    def _get_failure_reason(self, file_result: ConversionFileResult) -> str:
+        """Retorna uma descrição legível do motivo da falha.
+
+        Args:
+            file_result: Resultado da conversão de um arquivo.
+
+        Returns:
+            String descrevendo o motivo da falha.
+        """
+        reason_map = {
+            ConversionStatus.FAILED_CORRUPTED: self.i18n.t("summary.reason_corrupted"),
+            ConversionStatus.FAILED_PASSWORD: self.i18n.t("summary.reason_password"),
+            ConversionStatus.FAILED_NO_TEXT: self.i18n.t("summary.reason_no_text"),
+            ConversionStatus.FAILED_IO_ERROR: self.i18n.t("summary.reason_io_error"),
+        }
+        reason = reason_map.get(file_result.status, self.i18n.t("summary.reason_unknown"))
+        if file_result.error_message:
+            reason += f" ({file_result.error_message})"
+        return reason
 
     # ─── Métodos internos ────────────────────────────────────────────────────
 

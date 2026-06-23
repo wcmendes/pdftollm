@@ -56,7 +56,7 @@ class TestAboutDialogConstants:
 
     def test_github_url_constant(self) -> None:
         """A URL do GitHub deve estar correta."""
-        assert AboutDialog.GITHUB_URL == "http://github.com/wcmendes"
+        assert AboutDialog.GITHUB_URL == "https://github.com/wcmendes/pdftollm"
 
     def test_lattes_url_constant(self) -> None:
         """A URL do Lattes deve estar correta."""
@@ -64,11 +64,11 @@ class TestAboutDialogConstants:
 
     def test_version_constant(self) -> None:
         """A versão deve estar definida."""
-        assert AboutDialog.VERSION == "1.0.0"
+        assert AboutDialog.VERSION == "0.1.0-beta"
 
     def test_year_constant(self) -> None:
         """O ano deve estar definido."""
-        assert AboutDialog.YEAR == "2025"
+        assert AboutDialog.YEAR == "2026"
 
 
 class TestAboutDialogShow:
@@ -130,7 +130,7 @@ class TestAboutDialogOpenLink:
         """_open_link deve abrir o link do GitHub corretamente."""
         with patch("src.gui.about_dialog.webbrowser.open") as mock_open:
             about_dialog._open_link(AboutDialog.GITHUB_URL)
-            mock_open.assert_called_once_with("http://github.com/wcmendes")
+            mock_open.assert_called_once_with("https://github.com/wcmendes/pdftollm")
 
     def test_open_lattes_link(self, about_dialog: AboutDialog) -> None:
         """_open_link deve abrir o link do Lattes corretamente."""

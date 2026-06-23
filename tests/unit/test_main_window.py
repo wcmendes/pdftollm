@@ -1,7 +1,7 @@
-"""Testes unitários para a MainWindow.
+﻿"""Testes unitÃ¡rios para a MainWindow.
 
-Valida a criação de todos os widgets, integração com I18nManager
-e a atualização ao vivo de textos na troca de idioma.
+Valida a criaÃ§Ã£o de todos os widgets, integraÃ§Ã£o com I18nManager
+e a atualizaÃ§Ã£o ao vivo de textos na troca de idioma.
 """
 
 import tkinter as tk
@@ -17,7 +17,7 @@ from src.models.data_models import Locale
 
 @pytest.fixture
 def config_dir(tmp_path: Path) -> Path:
-    """Cria diretório temporário para persistência de configurações."""
+    """Cria diretÃ³rio temporÃ¡rio para persistÃªncia de configuraÃ§Ãµes."""
     config = tmp_path / "config"
     config.mkdir()
     return config
@@ -25,13 +25,13 @@ def config_dir(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def i18n(config_dir: Path) -> I18nManager:
-    """Cria instância do I18nManager com diretório de config temporário."""
+    """Cria instÃ¢ncia do I18nManager com diretÃ³rio de config temporÃ¡rio."""
     return I18nManager(config_dir=config_dir)
 
 
 @pytest.fixture(scope="module")
 def root(tk_root):
-    """Reutiliza a instância session-scoped do tkinter."""
+    """Reutiliza a instÃ¢ncia session-scoped do tkinter."""
     # Limpa filhos restantes de testes anteriores
     for child in tk_root.winfo_children():
         try:
@@ -43,16 +43,16 @@ def root(tk_root):
 
 @pytest.fixture
 def main_window(root: tk.Tk, i18n: I18nManager) -> MainWindow:
-    """Cria instância da MainWindow para testes."""
+    """Cria instÃ¢ncia da MainWindow para testes."""
     return MainWindow(root, i18n)
 
 
 class TestMainWindowCreation:
-    """Testes de criação da MainWindow e seus widgets."""
+    """Testes de criaÃ§Ã£o da MainWindow e seus widgets."""
 
     def test_window_title_set(self, main_window: MainWindow) -> None:
-        """O título da janela deve ser definido via i18n."""
-        assert main_window.root.title() == "Conversor PDF para Markdown"
+        """O tÃ­tulo da janela deve ser definido via i18n."""
+        assert main_window.root.title() == "PDF2LLM - PDF to Markdown Converter"
 
     def test_file_listbox_exists(self, main_window: MainWindow) -> None:
         """A listbox de arquivos deve existir."""
@@ -63,12 +63,12 @@ class TestMainWindowCreation:
         assert isinstance(main_window._file_scrollbar, ttk.Scrollbar)
 
     def test_select_files_button_exists(self, main_window: MainWindow) -> None:
-        """O botão de seleção de arquivos deve existir com texto correto."""
+        """O botÃ£o de seleÃ§Ã£o de arquivos deve existir com texto correto."""
         assert isinstance(main_window._select_files_button, ttk.Button)
         assert main_window._select_files_button.cget("text") == "Selecionar Arquivos PDF"
 
     def test_remove_file_button_exists(self, main_window: MainWindow) -> None:
-        """O botão de remoção de arquivo deve existir com texto correto."""
+        """O botÃ£o de remoÃ§Ã£o de arquivo deve existir com texto correto."""
         assert isinstance(main_window._remove_file_button, ttk.Button)
         assert main_window._remove_file_button.cget("text") == "Remover"
 
@@ -77,17 +77,17 @@ class TestMainWindowCreation:
         assert isinstance(main_window._output_folder_entry, ttk.Entry)
 
     def test_select_folder_button_exists(self, main_window: MainWindow) -> None:
-        """O botão de seleção de pasta deve existir com texto correto."""
+        """O botÃ£o de seleÃ§Ã£o de pasta deve existir com texto correto."""
         assert isinstance(main_window._select_folder_button, ttk.Button)
         assert main_window._select_folder_button.cget("text") == "Selecionar Pasta de Destino"
 
     def test_extract_images_checkbox_exists(self, main_window: MainWindow) -> None:
-        """O checkbox de extração de imagens deve existir com texto correto."""
+        """O checkbox de extraÃ§Ã£o de imagens deve existir com texto correto."""
         assert isinstance(main_window._extract_images_check, ttk.Checkbutton)
         assert main_window._extract_images_check.cget("text") == "Extrair imagens e objetos embutidos"
 
     def test_convert_button_exists(self, main_window: MainWindow) -> None:
-        """O botão de converter deve existir com texto correto."""
+        """O botÃ£o de converter deve existir com texto correto."""
         assert isinstance(main_window._convert_button, ttk.Button)
         assert main_window._convert_button.cget("text") == "Converter"
 
@@ -104,7 +104,7 @@ class TestMainWindowCreation:
         assert isinstance(main_window._language_combo, ttk.Combobox)
 
     def test_about_button_exists(self, main_window: MainWindow) -> None:
-        """O botão Sobre deve existir com texto correto."""
+        """O botÃ£o Sobre deve existir com texto correto."""
         assert isinstance(main_window._about_button, ttk.Button)
         assert main_window._about_button.cget("text") == "Sobre"
 
@@ -122,7 +122,7 @@ class TestMainWindowI18nLiveUpdate:
         """Todos os textos devem atualizar ao mudar o idioma para EN."""
         i18n.set_locale(Locale.EN)
 
-        assert main_window.root.title() == "PDF to Markdown Converter"
+        assert main_window.root.title() == "PDF2LLM - PDF to Markdown Converter"
         assert main_window._select_files_button.cget("text") == "Select PDF Files"
         assert main_window._remove_file_button.cget("text") == "Remove"
         assert main_window._select_folder_button.cget("text") == "Select Output Folder"
@@ -147,7 +147,7 @@ class TestMainWindowI18nLiveUpdate:
         i18n.set_locale(Locale.EN)
         i18n.set_locale(Locale.PT_BR)
 
-        assert main_window.root.title() == "Conversor PDF para Markdown"
+        assert main_window.root.title() == "PDF2LLM - PDF to Markdown Converter"
         assert main_window._convert_button.cget("text") == "Converter"
         assert main_window._language_var.get() == "Português (Brasil)"
 
