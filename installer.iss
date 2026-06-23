@@ -112,11 +112,18 @@ begin
     Exit;
   end;
 
-  // Instala o Tesseract silenciosamente
-  WizardForm.StatusLabel.Caption := 'Instalando Tesseract OCR...';
+  // Instala o Tesseract (pede elevação de admin pois o Tesseract exige)
+  WizardForm.StatusLabel.Caption := 'Instalando Tesseract OCR (pode pedir permissão de administrador)...';
   WizardForm.StatusLabel.Update;
   
-  Exec(TempFile, '/S', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if not ShellExec('runas', TempFile, '/S', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    MsgBox('A instalação do Tesseract foi cancelada (permissão negada).' + #13#10 +
+           'O PDF2LLM funcionará usando EasyOCR como alternativa.' + #13#10 + #13#10 +
+           'Para instalar depois: https://github.com/UB-Mannheim/tesseract/wiki',
+           mbInformation, MB_OK);
+    Exit;
+  end;
   
   if ResultCode = 0 then
     Log('Tesseract instalado com sucesso.')
