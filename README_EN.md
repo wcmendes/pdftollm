@@ -25,10 +25,23 @@ Desktop application for batch PDF to Markdown conversion, designed for feeding L
 
 Get the latest version from [Releases](https://github.com/wcmendes/pdftollm/releases):
 
-| Platform | File |
-|----------|------|
-| Windows | `PDF2LLM.exe` |
-| Linux (Debian/Ubuntu) | `pdf2llm_x.x.x_amd64.deb` |
+| Platform | File | Description |
+|----------|------|-------------|
+| Windows | `PDF2LLM-Setup-x.x.x.exe` | **Installer** with Start Menu and uninstaller |
+| Windows | `PDF2LLM-portable.zip` | Portable version (extract and use) |
+| Windows | `PDF2LLM.exe` | Standalone single-file executable |
+| Linux (Debian/Ubuntu) | `pdf2llm_x.x.x_amd64.deb` | .deb package (`sudo dpkg -i ...`) |
+
+### Lightweight alternative (Linux/macOS)
+
+If you prefer not to download the full .deb, install via pip:
+
+```bash
+pip install git+https://github.com/wcmendes/pdftollm.git
+python -m src.main
+```
+
+Requires Python 3.10+ and `python3-tk` (`sudo apt install python3-tk`).
 
 ## Requirements
 
@@ -82,21 +95,36 @@ After conversion, if the system detects PDFs that produced empty Markdown (scann
 
 If neither can extract text, the original file is preserved.
 
+## Distribution / Build
+
+The project offers multiple packaging options:
+
+| Command | Result |
+|---------|--------|
+| `build_exe.bat` | `dist\PDF2LLM.exe` (standalone, ~280 MB) |
+| `build_setup.bat` | `dist\PDF2LLM-Setup-x.x.x.exe` (installer) |
+| PyInstaller folder | `dist\PDF2LLM\` → can be zipped as portable |
+
+GitHub Actions (`release.yml`) builds everything automatically when you push a `v*` tag.
+
 ## Project Structure
 
 ```
 pdftollm/
 ├── src/
-│   ├── main.py           # Entry point
-│   ├── converters/       # PDF → Markdown engine
-│   ├── gui/              # tkinter interface
-│   ├── i18n/             # Internationalization
-│   ├── models/           # Dataclasses and managers
-│   └── ocr/              # Tesseract + EasyOCR
-├── locales/              # Translations (JSON)
-├── tests/                # 246 tests (unit + property-based)
-├── pyproject.toml        # Dependencies and config
-└── pdfconverter.spec     # PyInstaller build
+│   ├── main.py              # Entry point
+│   ├── converters/          # PDF → Markdown engine
+│   ├── gui/                 # tkinter interface
+│   ├── i18n/                # Internationalization
+│   ├── models/              # Dataclasses and managers
+│   └── ocr/                 # Tesseract + EasyOCR
+├── locales/                 # Translations (JSON)
+├── tests/                   # 246 tests (unit + property-based)
+├── pyproject.toml           # Dependencies and config
+├── pdfconverter.spec        # One-file build (.exe)
+├── pdfconverter_folder.spec # One-folder build (for Setup/ZIP)
+├── installer.iss            # Inno Setup script
+└── .github/workflows/       # CI/CD (automatic releases)
 ```
 
 ## Tests
