@@ -49,6 +49,18 @@ Requer Python 3.10+ e `python3-tk` instalado (`sudo apt install python3-tk`).
 - **Para rodar do código-fonte**: Python 3.10+
 - **Tesseract OCR** (opcional): melhora resultados de OCR, mas a aplicação funciona sem ele
 
+### Compatibilidade
+
+| Plataforma | Versões suportadas |
+|-----------|-------------------|
+| Windows | 10, 11 (64-bit) |
+| Ubuntu | 22.04, 24.04 (amd64) |
+| Debian | 11, 12 (amd64) |
+| Linux Mint | 21+ |
+| Pop!_OS | 22.04+ |
+
+> Outras distros baseadas em Debian/Ubuntu com `glibc >= 2.31` também devem funcionar.
+
 ### Instalar Tesseract (opcional)
 
 <details>
