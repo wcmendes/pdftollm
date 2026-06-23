@@ -75,7 +75,7 @@ procedure InstallTesseract;
 var
   TempFile: String;
   ResultCode: Integer;
-  DownloadCmd: String;
+  DownloadAndInstallCmd: String;
 begin
   if IsTesseractInstalled then
   begin
@@ -85,51 +85,44 @@ begin
 
   TempFile := ExpandConstant('{tmp}\tesseract-setup.exe');
   
-  // PowerShell busca a URL mais recente do Tesseract via GitHub API
-  // e faz o download automaticamente (funciona mesmo quando mudam de versão)
-  DownloadCmd := 'powershell -ExecutionPolicy Bypass -Command "& { ' +
+  // Um único script PowerShell que:
+  // 1. Busca a URL mais recente do Tesseract via GitHub API
+  // 2. Baixa o instalador
+  // 3. Executa com elevação (Start-Process -Verb RunAs) disparando o UAC
+  DownloadAndInstallCmd := 'powershell -ExecutionPolicy Bypass -Command "& { ' +
     '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; ' +
     'try { ' +
+    'Write-Host ''Buscando ultima versao do Tesseract...''; ' +
     '$rel = Invoke-RestMethod ''https://api.github.com/repos/UB-Mannheim/tesseract/releases/latest''; ' +
     '$asset = $rel.assets | Where-Object { $_.name -like ''*w64-setup*'' } | Select-Object -First 1; ' +
-    'if ($asset) { Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ''' + TempFile + ''' } ' +
-    'else { exit 1 } ' +
-    '} catch { exit 1 } ' +
+    'if (-not $asset) { Write-Host ''Asset nao encontrado''; exit 1 }; ' +
+    'Write-Host (''Baixando: '' + $asset.name); ' +
+    'Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ''' + TempFile + '''; ' +
+    'if (-not (Test-Path ''' + TempFile + ''')) { exit 1 }; ' +
+    'Write-Host ''Instalando com elevacao...''; ' +
+    'Start-Process -FilePath ''' + TempFile + ''' -ArgumentList ''/S'' -Verb RunAs -Wait; ' +
+    'Write-Host ''Concluido.''; ' +
+    '} catch { Write-Host $_.Exception.Message; exit 1 } ' +
     '}"';
   
-  WizardForm.StatusLabel.Caption := 'Baixando Tesseract OCR (última versão)...';
+  WizardForm.StatusLabel.Caption := 'Baixando e instalando Tesseract OCR...';
   WizardForm.StatusLabel.Update;
   
-  Exec('cmd.exe', '/C ' + DownloadCmd, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/C ' + DownloadAndInstallCmd, '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode);
 
-  if (ResultCode <> 0) or (not FileExists(TempFile)) then
+  if ResultCode <> 0 then
   begin
-    MsgBox('Não foi possível baixar o Tesseract OCR.' + #13#10 +
-           'O PDF2LLM funcionará normalmente usando EasyOCR como alternativa.' + #13#10 + #13#10 +
-           'Para instalar o Tesseract manualmente:' + #13#10 +
-           'https://github.com/UB-Mannheim/tesseract/wiki',
-           mbInformation, MB_OK);
-    Exit;
-  end;
-
-  // Instala o Tesseract (pede elevação de admin pois o Tesseract exige)
-  WizardForm.StatusLabel.Caption := 'Instalando Tesseract OCR (pode pedir permissão de administrador)...';
-  WizardForm.StatusLabel.Update;
-  
-  if not ShellExec('runas', TempFile, '/S', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    MsgBox('A instalação do Tesseract foi cancelada (permissão negada).' + #13#10 +
-           'O PDF2LLM funcionará usando EasyOCR como alternativa.' + #13#10 + #13#10 +
-           'Para instalar depois: https://github.com/UB-Mannheim/tesseract/wiki',
-           mbInformation, MB_OK);
-    Exit;
-  end;
-  
-  if ResultCode = 0 then
-    Log('Tesseract instalado com sucesso.')
+    if not IsTesseractInstalled then
+    begin
+      MsgBox('A instalação do Tesseract não foi concluída.' + #13#10 +
+             'O PDF2LLM funcionará normalmente usando EasyOCR como alternativa.' + #13#10 + #13#10 +
+             'Para instalar manualmente depois:' + #13#10 +
+             'https://github.com/UB-Mannheim/tesseract/wiki',
+             mbInformation, MB_OK);
+    end;
+  end
   else
-    MsgBox('A instalação do Tesseract pode não ter sido concluída (código: ' + IntToStr(ResultCode) + ').' + #13#10 +
-           'O PDF2LLM funcionará usando EasyOCR como alternativa.', mbInformation, MB_OK);
+    Log('Comando de instalação do Tesseract concluído.');
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
