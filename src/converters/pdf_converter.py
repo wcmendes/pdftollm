@@ -23,6 +23,7 @@ class PDFConverter:
         source: Path,
         output_dir: Path,
         extract_images: bool,
+        skip_if_exists: bool = False,
     ) -> ConversionFileResult:
         """
         Converte um PDF para Markdown.
@@ -31,11 +32,21 @@ class PDFConverter:
             source: Caminho do arquivo PDF de entrada.
             output_dir: Diretório onde o arquivo .md será salvo.
             extract_images: Se True, extrai imagens para subpasta de assets.
+            skip_if_exists: Se True, pula arquivos cujo .md já existe no destino.
 
         Returns:
             ConversionFileResult com status, caminho de saída e contagem de imagens.
         """
         output_path = output_dir / source.with_suffix(".md").name
+
+        # Se pedido, pula arquivo que já existe
+        if skip_if_exists and output_path.exists():
+            return ConversionFileResult(
+                source=source,
+                output=output_path,
+                status=ConversionStatus.SUCCESS,
+                error_message="",
+            )
 
         try:
             doc = fitz.open(str(source))

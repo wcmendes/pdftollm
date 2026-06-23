@@ -21,7 +21,7 @@ class AboutDialog:
     AUTHOR = "William Mendes"
     GITHUB_URL = "https://github.com/wcmendes/pdftollm"
     LATTES_URL = "https://lattes.cnpq.br/7726054867638395"
-    VERSION = "0.1.0-beta"
+    VERSION = "0.1.1-beta"
     YEAR = "2026"
 
     def __init__(self, parent: tk.Tk, i18n: I18nManager) -> None:

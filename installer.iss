@@ -11,7 +11,7 @@
 ; Ou via GitHub Actions (veja release.yml)
 
 #define MyAppName "PDF2LLM"
-#define MyAppVersion "0.1.0-beta"
+#define MyAppVersion "0.1.1-beta"
 #define MyAppPublisher "William Mendes"
 #define MyAppURL "https://github.com/wcmendes/pdftollm"
 #define MyAppExeName "PDF2LLM.exe"
@@ -68,7 +68,8 @@ function IsTesseractInstalled: Boolean;
 begin
   Result := FileExists(ExpandConstant('{commonpf}\Tesseract-OCR\tesseract.exe')) or
             FileExists(ExpandConstant('{commonpf32}\Tesseract-OCR\tesseract.exe')) or
-            FileExists(ExpandConstant('{localappdata}\Tesseract-OCR\tesseract.exe'));
+            FileExists(ExpandConstant('{localappdata}\Tesseract-OCR\tesseract.exe')) or
+            FileExists(ExpandConstant('{localappdata}\Programs\Tesseract-OCR\tesseract.exe'));
 end;
 
 procedure InstallTesseract;

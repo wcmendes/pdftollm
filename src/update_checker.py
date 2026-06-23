@@ -11,7 +11,7 @@ from typing import Callable
 logger = logging.getLogger(__name__)
 
 GITHUB_API_URL = "https://api.github.com/repos/wcmendes/pdftollm/releases/latest"
-CURRENT_VERSION = "0.1.0-beta"
+CURRENT_VERSION = "0.1.1-beta"
 
 
 def _parse_version(version_str: str) -> tuple:

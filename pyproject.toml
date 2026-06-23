@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pdf-to-markdown-converter"
-version = "0.1.0-beta"
+version = "0.1.1-beta"
 description = "Aplicação desktop multiplataforma para conversão em lote de PDFs para Markdown"
 authors = [
     { name = "William Mendes", email = "wcmendes@users.noreply.github.com" }

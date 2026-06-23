@@ -38,6 +38,7 @@ class ConversionManager:
         files: list[Path],
         output_dir: Path,
         extract_images: bool,
+        confirm_overwrite: bool = False,
     ) -> threading.Thread:
         """
         Inicia a conversão em uma thread separada.
@@ -48,13 +49,14 @@ class ConversionManager:
             files: Lista de caminhos dos arquivos PDF a converter.
             output_dir: Diretório de destino para os arquivos Markdown.
             extract_images: Se True, extrai imagens embutidas dos PDFs.
+            confirm_overwrite: Se True, pula arquivos cujo .md já existe.
 
         Returns:
             A thread criada (já iniciada).
         """
         thread = threading.Thread(
             target=self._worker,
-            args=(files, output_dir, extract_images),
+            args=(files, output_dir, extract_images, confirm_overwrite),
             daemon=True,
         )
         thread.start()
@@ -65,6 +67,7 @@ class ConversionManager:
         files: list[Path],
         output_dir: Path,
         extract_images: bool,
+        confirm_overwrite: bool = False,
     ) -> None:
         """
         Função executada na thread de trabalho.
@@ -86,7 +89,7 @@ class ConversionManager:
 
         for index, source_file in enumerate(files, start=1):
             try:
-                result = self._converter.convert(source_file, output_dir, extract_images)
+                result = self._converter.convert(source_file, output_dir, extract_images, confirm_overwrite)
                 results.append(result)
 
                 if result.status == ConversionStatus.SUCCESS:
