@@ -405,14 +405,29 @@ class MainWindow:
             status_text = self.i18n.t("labels.tesseract_missing")
             fg_color = "#B8860B"  # dark goldenrod (amarelo escuro legível)
 
+        tess_frame = ttk.Frame(self._main_frame)
+        tess_frame.grid(row=row, column=0, sticky="w", pady=(8, 0))
+
         self._tesseract_status_label = ttk.Label(
-            self._main_frame,
+            tess_frame,
             text=status_text,
             foreground=fg_color,
-            wraplength=650,
             font=("TkDefaultFont", 8),
         )
-        self._tesseract_status_label.grid(row=row, column=0, sticky="w", pady=(8, 0))
+        self._tesseract_status_label.pack(side="left")
+
+        if not self._tesseract_available:
+            install_link = ttk.Label(
+                tess_frame,
+                text="  [Instalar]",
+                foreground="#0066CC",
+                font=("TkDefaultFont", 8, "underline"),
+                cursor="hand2",
+            )
+            install_link.pack(side="left")
+            install_link.bind("<Button-1>", lambda e: __import__('webbrowser').open(
+                "https://github.com/UB-Mannheim/tesseract/wiki"
+            ))
 
         return row + 1
 
