@@ -67,6 +67,7 @@ class MainWindow:
 
         # Variáveis de controle do tkinter
         self._extract_images_var = tk.BooleanVar(value=False)
+        self._confirm_overwrite_var = tk.BooleanVar(value=False)
         self._language_var = tk.StringVar()
         self._output_folder_var = tk.StringVar(value=self.i18n.t("labels.output_folder_none"))
         self._current_file_var = tk.StringVar(value="")
@@ -340,7 +341,16 @@ class MainWindow:
             text=self.i18n.t("labels.extract_images"),
             variable=self._extract_images_var,
         )
-        self._extract_images_check.grid(row=row, column=0, sticky="w", pady=(0, 10))
+        self._extract_images_check.grid(row=row, column=0, sticky="w", pady=(0, 2))
+
+        row += 1
+
+        self._confirm_overwrite_check = ttk.Checkbutton(
+            self._main_frame,
+            text=self.i18n.t("labels.confirm_overwrite"),
+            variable=self._confirm_overwrite_var,
+        )
+        self._confirm_overwrite_check.grid(row=row, column=0, sticky="w", pady=(0, 10))
 
         return row + 1
 
@@ -631,6 +641,7 @@ class MainWindow:
             files=self._file_list_manager.files,
             output_dir=self._output_folder_path,
             extract_images=self._extract_images_var.get(),
+            confirm_overwrite=self._confirm_overwrite_var.get(),
         )
 
         # Iniciar polling da fila de progresso
@@ -921,6 +932,7 @@ class MainWindow:
 
         # Opções
         self._extract_images_check.config(text=self.i18n.t("labels.extract_images"))
+        self._confirm_overwrite_check.config(text=self.i18n.t("labels.confirm_overwrite"))
 
         # Botão converter
         self._convert_button.config(text=self.i18n.t("buttons.convert"))

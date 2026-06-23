@@ -18,6 +18,7 @@
   "labels.output_folder": "Output Folder:",
   "labels.output_folder_none": "No folder selected",
   "labels.extract_images": "Extract images and embedded objects",
+  "labels.confirm_overwrite": "Ask before overwriting existing files",
   "labels.language": "Language:",
   "labels.file_name": "Name",
   "labels.file_path": "Path",

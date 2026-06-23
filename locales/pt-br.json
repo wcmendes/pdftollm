@@ -18,6 +18,7 @@
   "labels.output_folder": "Pasta de Destino:",
   "labels.output_folder_none": "Nenhuma pasta selecionada",
   "labels.extract_images": "Extrair imagens e objetos embutidos",
+  "labels.confirm_overwrite": "Perguntar antes de substituir arquivos existentes",
   "labels.language": "Idioma:",
   "labels.file_name": "Nome",
   "labels.file_path": "Caminho",

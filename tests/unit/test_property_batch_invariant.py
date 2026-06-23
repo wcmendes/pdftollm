@@ -61,7 +61,7 @@ def _create_mock_side_effect(
     """
     call_index = {"value": 0}
 
-    def side_effect(source: Path, output_dir: Path, extract_images: bool):
+    def side_effect(source: Path, output_dir: Path, extract_images: bool, skip_if_exists: bool = False):
         idx = call_index["value"]
         call_index["value"] += 1
 

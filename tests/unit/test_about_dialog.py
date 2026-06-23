@@ -64,7 +64,7 @@ class TestAboutDialogConstants:
 
     def test_version_constant(self) -> None:
         """A versão deve estar definida."""
-        assert AboutDialog.VERSION == "0.1.0-beta"
+        assert AboutDialog.VERSION == "0.1.1-beta"
 
     def test_year_constant(self) -> None:
         """O ano deve estar definido."""

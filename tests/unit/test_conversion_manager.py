@@ -1,4 +1,4 @@
-"""Testes unitários para ConversionManager."""
+﻿"""Testes unitários para ConversionManager."""
 
 import queue
 import time
@@ -156,7 +156,7 @@ class TestConversionManagerWorker:
 
         with patch.object(manager._converter, "convert") as mock_convert:
 
-            def side_effect(source, output_dir, extract_images):
+            def side_effect(source, output_dir, extract_images, skip_if_exists=False):
                 if source == Path("bad.pdf"):
                     return ConversionFileResult(
                         source=source,
@@ -193,7 +193,7 @@ class TestConversionManagerWorker:
 
         with patch.object(manager._converter, "convert") as mock_convert:
 
-            def side_effect(source, output_dir, extract_images):
+            def side_effect(source, output_dir, extract_images, skip_if_exists=False):
                 if source == Path("crash.pdf"):
                     raise RuntimeError("Erro inesperado")
                 return ConversionFileResult(
@@ -271,4 +271,4 @@ class TestConversionManagerWorker:
             thread = manager.start([Path("doc.pdf")], Path("/out"), True)
             thread.join(timeout=5)
 
-            mock_convert.assert_called_once_with(Path("doc.pdf"), Path("/out"), True)
+            mock_convert.assert_called_once_with(Path("doc.pdf"), Path("/out"), True, False)
