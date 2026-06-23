@@ -15,7 +15,6 @@
 #define MyAppPublisher "William Mendes"
 #define MyAppURL "https://github.com/wcmendes/pdftollm"
 #define MyAppExeName "PDF2LLM.exe"
-#define TesseractURL "https://github.com/UB-Mannheim/tesseract/releases/download/v5.5.0.20241111/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
 
 [Setup]
 AppId={{A3F7B2C1-9D4E-4F6A-8B5C-1E2D3F4A5B6C}
@@ -48,7 +47,7 @@ Name: "custom"; Description: "Personalizada"; Flags: iscustom
 
 [Components]
 Name: "main"; Description: "PDF2LLM - Aplicação principal"; Types: full compact custom; Flags: fixed
-Name: "tesseract"; Description: "Tesseract OCR 5.5 (recomendado - melhora OCR em PDFs escaneados)"; Types: full
+Name: "tesseract"; Description: "Tesseract OCR (recomendado - melhora OCR em PDFs escaneados)"; Types: full
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -86,25 +85,29 @@ begin
 
   TempFile := ExpandConstant('{tmp}\tesseract-setup.exe');
   
-  // Usa PowerShell para baixar (disponível em qualquer Windows 10+)
-  DownloadCmd := 'powershell -Command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri ''{#TesseractURL}'' -OutFile ''' + TempFile + ''' }"';
+  // PowerShell busca a URL mais recente do Tesseract via GitHub API
+  // e faz o download automaticamente (funciona mesmo quando mudam de versão)
+  DownloadCmd := 'powershell -ExecutionPolicy Bypass -Command "& { ' +
+    '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; ' +
+    'try { ' +
+    '$rel = Invoke-RestMethod ''https://api.github.com/repos/UB-Mannheim/tesseract/releases/latest''; ' +
+    '$asset = $rel.assets | Where-Object { $_.name -like ''*w64-setup*'' } | Select-Object -First 1; ' +
+    'if ($asset) { Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ''' + TempFile + ''' } ' +
+    'else { exit 1 } ' +
+    '} catch { exit 1 } ' +
+    '}"';
   
-  WizardForm.StatusLabel.Caption := 'Baixando Tesseract OCR (~35 MB)...';
+  WizardForm.StatusLabel.Caption := 'Baixando Tesseract OCR (última versão)...';
   WizardForm.StatusLabel.Update;
   
-  if not Exec('cmd.exe', '/C ' + DownloadCmd, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  Exec('cmd.exe', '/C ' + DownloadCmd, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+  if (ResultCode <> 0) or (not FileExists(TempFile)) then
   begin
     MsgBox('Não foi possível baixar o Tesseract OCR.' + #13#10 +
-           'O PDF2LLM funcionará usando EasyOCR como alternativa.' + #13#10 + #13#10 +
-           'Instale manualmente depois: https://github.com/UB-Mannheim/tesseract/wiki',
-           mbInformation, MB_OK);
-    Exit;
-  end;
-
-  if not FileExists(TempFile) then
-  begin
-    MsgBox('Download do Tesseract falhou.' + #13#10 +
-           'O PDF2LLM funcionará usando EasyOCR como alternativa.',
+           'O PDF2LLM funcionará normalmente usando EasyOCR como alternativa.' + #13#10 + #13#10 +
+           'Para instalar o Tesseract manualmente:' + #13#10 +
+           'https://github.com/UB-Mannheim/tesseract/wiki',
            mbInformation, MB_OK);
     Exit;
   end;
@@ -118,8 +121,8 @@ begin
   if ResultCode = 0 then
     Log('Tesseract instalado com sucesso.')
   else
-    MsgBox('A instalação do Tesseract pode não ter sido bem-sucedida (código: ' + IntToStr(ResultCode) + ').' + #13#10 +
-           'O PDF2LLM funcionará usando EasyOCR.', mbInformation, MB_OK);
+    MsgBox('A instalação do Tesseract pode não ter sido concluída (código: ' + IntToStr(ResultCode) + ').' + #13#10 +
+           'O PDF2LLM funcionará usando EasyOCR como alternativa.', mbInformation, MB_OK);
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
