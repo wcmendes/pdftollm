@@ -134,6 +134,7 @@ class TesseractEngine(OCREngine):
 
         Usa o Tesseract em modo OSD (Orientation and Script Detection)
         para determinar se a imagem está rotacionada e corrigi-la.
+        Usa Image.transpose para rotações exatas de 90/180/270°.
 
         Args:
             img: Imagem PIL a verificar.
@@ -145,9 +146,15 @@ class TesseractEngine(OCREngine):
         try:
             osd = pytesseract.image_to_osd(img, output_type=pytesseract.Output.DICT)
             rotation = osd.get("rotate", 0)
-            if rotation and rotation != 0:
-                logger.info(f"Detectada rotação de {rotation}°, corrigindo...")
-                img = img.rotate(-rotation, expand=True)
+            if rotation == 90:
+                logger.info("Detectada rotação de 90°, corrigindo com ROTATE_270...")
+                img = img.transpose(Image.Transpose.ROTATE_270)
+            elif rotation == 180:
+                logger.info("Detectada rotação de 180°, corrigindo...")
+                img = img.transpose(Image.Transpose.ROTATE_180)
+            elif rotation == 270:
+                logger.info("Detectada rotação de 270°, corrigindo com ROTATE_90...")
+                img = img.transpose(Image.Transpose.ROTATE_90)
         except Exception as e:
             logger.debug(f"Detecção de orientação falhou (normal para textos curtos): {e}")
         return img
